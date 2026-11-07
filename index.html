@@ -364,6 +364,68 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Peta (mind map) ---------- */
+.mm { position: relative; display: flex; flex-direction: column; gap: 22px; padding: 6px 0 10px; }
+.mm-lines { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; z-index: 0; }
+.mm-lines path { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: .9; }
+.mm-lines path.k { opacity: .6; }
+.mm-lines path.grow { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mmDraw .55s cubic-bezier(.3,.8,.3,1) forwards; }
+.mm-lines path.dash { stroke-dasharray: 3 6; opacity: .55; }
+@keyframes mmDraw { to { stroke-dashoffset: 0; } }
+.mm-side { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding-left: 32px; }
+.mm-h { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; color: var(--text2); }
+.mm-h b { color: var(--text); text-transform: none; letter-spacing: -.01em; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.mm-branch { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 100%; }
+.mm-kids { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-left: 32px; max-width: 100%; }
+.mm-node {
+  position: relative; z-index: 1; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px;
+  max-width: 100%; min-width: 0; padding: 9px 14px; border-radius: 16px; text-align: left;
+  background: var(--card); box-shadow: var(--shadow);
+  transition: transform .35s var(--spring), box-shadow .25s;
+}
+.mm-node:active { transform: scale(.95); }
+.mm-node.cat { min-width: 176px; padding-right: 38px; border-radius: 18px; }
+.mm-node.cat .mm-t { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.mm-node .dot { width: 9px; height: 9px; }
+.mm-t { display: block; max-width: 100%; font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mm-t em { font-style: normal; font-size: 13px; font-weight: 500; color: var(--text2); }
+.mm-v { font-size: 13px; color: var(--text2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mm-chev { position: absolute; top: 50%; right: 12px; width: 16px; height: 16px; margin-top: -8px; color: var(--text2); stroke-width: 2.4; transition: transform .4s var(--spring); }
+.mm-branch.open > .cat { box-shadow: 0 0 0 2px var(--c), var(--shadow); }
+.mm-branch.open > .cat .mm-chev { transform: rotate(90deg); }
+.mm-node.leaf { padding: 7px 12px; border-radius: 13px; }
+.mm-node.more { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+.mm-node.new { animation: mmIn .4s ease both; }
+@keyframes mmIn { from { opacity: 0; } }
+.mm-none { position: relative; z-index: 1; padding: 10px 14px; border-radius: 14px; font-size: 14px; color: var(--text2); border: 1px dashed var(--fill-strong); }
+.mm-center {
+  position: relative; z-index: 1; padding: 16px 18px; border-radius: 22px; color: #f5f5f7;
+  background: radial-gradient(70% 120% at 100% 0%, rgba(41,151,255,.4), transparent 62%), radial-gradient(60% 90% at 0% 100%, rgba(175,82,222,.28), transparent 60%), #0a0a0c;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.mm-center small, .mm-center span { display: block; font-size: 13px; color: rgba(245,245,247,.72); }
+.mm-center b { display: block; font-size: 30px; font-weight: 700; letter-spacing: -.035em; line-height: 1.15; margin: 2px 0; font-variant-numeric: tabular-nums; }
+.mm-center b.neg { color: #ff8a80; }
+@media (min-width: 1100px) {
+  .mm { display: grid; grid-template-columns: minmax(0, 1fr) 216px minmax(0, 1fr); align-items: center; gap: 0 44px; padding: 16px 0; }
+  .mm-side { padding-left: 0; align-self: center; }
+  .mm-side.in { align-items: flex-end; }
+  .mm-branch { flex-direction: row; align-items: center; gap: 40px; }
+  .mm-side.in .mm-branch { flex-direction: row-reverse; }
+  .mm-kids { padding-left: 0; }
+  .mm-side.in .mm-kids { align-items: flex-end; }
+  .mm-node { max-width: 200px; }
+  .mm-node.cat { min-width: 0; flex: none; }
+  .mm-kids { min-width: 0; }
+  .mm-node.leaf { max-width: 170px; }
+  .mm-side.in .mm-node { align-items: flex-end; text-align: right; }
+  .mm-side.in .mm-node.cat { padding-right: 14px; padding-left: 38px; }
+  .mm-side.in .mm-chev { right: auto; left: 12px; transform: rotate(180deg); }
+  .mm-branch.open > .cat .mm-chev, .mm-side.in .mm-branch.open > .cat .mm-chev { transform: rotate(0deg); }
+  .mm-side.out .mm-branch.open > .cat .mm-chev { transform: rotate(180deg); }
+  .mm-center { text-align: center; }
+}
+
 /* ---------- Desktop ---------- */
 @media (min-width: 700px) {
   .envs { grid-template-columns: repeat(2, 1fr); }
@@ -449,7 +511,8 @@ const errText = (c) => {
   if (ERR[c]) return ERR[c];
   if (/^kategori_masih_dipakai/.test(c)) return 'Kategori masih dipakai.';
   if (/^maksimal_/.test(c)) return 'Maksimal ' + MAX_CATS + ' kategori.';
-  if (/Sheet ".+" belum ada/.test(c)) return 'Jalankan setup() di Apps Script.';
+  if (/Sheet ".+" belum ada/.test(c)) return 'Sheet belum siap. Deploy ulang Code.gs terbaru (New version).';
+  if (c === 'skrip_tidak_terikat_sheet') return 'Buat skrip dari Google Sheet: Extensions → Apps Script.';
   return c;
 };
 
@@ -477,6 +540,7 @@ const IC = {
   out: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
   in: '<path d="M17 7 7 17"/><path d="M17 17H7V7"/>',
   set: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  map: '<circle cx="12" cy="12" r="2.6"/><circle cx="4.5" cy="5.5" r="1.9"/><circle cx="4.5" cy="18.5" r="1.9"/><circle cx="19.5" cy="5.5" r="1.9"/><circle cx="19.5" cy="18.5" r="1.9"/><path d="M10 10.3 6 7M10 13.7 6 17M14 10.3 18 7M14 13.7 18 17"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   left: '<path d="M15 6l-6 6 6 6"/>',
   right: '<path d="M9 6l6 6-6 6"/>'
@@ -495,6 +559,8 @@ const ui = {
   tab: 'home',
   month: today().slice(0, 7),
   filter: { expense: '', topup: '' },
+  mmOpen: new Set(),
+  mmJust: '',
   sync: { state: 'idle', msg: '' }
 };
 const connected = () => !!(S.cfg.url && S.cfg.token);
@@ -604,9 +670,10 @@ const useCount = (name) => [...S.topups, ...S.expenses].filter((t) => t.category
    ===================================================================== */
 const TABS = [
   { id: 'home', label: 'Beranda', icon: 'home', title: 'Beranda' },
-  { id: 'expense', label: 'Pengeluaran', icon: 'out', title: 'Pengeluaran' },
-  { id: 'topup', label: 'Top Up', icon: 'in', title: 'Top Up' },
-  { id: 'settings', label: 'Pengaturan', icon: 'set', title: 'Pengaturan' }
+  { id: 'expense', label: 'Keluar', icon: 'out', title: 'Pengeluaran' },
+  { id: 'topup', label: 'Masuk', icon: 'in', title: 'Top Up' },
+  { id: 'map', label: 'Peta', icon: 'map', title: 'Peta' },
+  { id: 'settings', label: 'Atur', icon: 'set', title: 'Pengaturan' }
 ];
 const main = $('#main');
 
@@ -809,6 +876,136 @@ function viewTx(kind) {
   ${groups.length ? list : emptyBlock('Belum ada catatan', `${esc(monthLabel(ui.month))}${f ? ' · ' + esc(f) : ''}`, isExp ? 'Catat' : 'Top up', 'new', kind)}`;
 }
 
+/* ---------- Peta: model ---------- */
+let mmGroups = {};
+const noteKey = (n) => { const v = String(n || '').trim(); return v && v !== '-' ? v.toLowerCase().replace(/\s+/g, ' ') : ''; };
+const pctTxt = (x) => (x > 0 && x < .005 ? '<1%' : Math.round(x * 100) + '%');
+const lineW = (share) => (1.25 + 6 * Math.max(0, Math.min(1, share))).toFixed(2);
+
+function mapSide(list, kind) {
+  const total = sum(list);
+  const byCat = new Map();
+  list.forEach((t) => { if (!byCat.has(t.category)) byCat.set(t.category, []); byCat.get(t.category).push(t); });
+  const cats = [...byCat].map(([name, items]) => {
+    const amount = sum(items);
+    const g = new Map();
+    items.forEach((t) => {
+      const k = noteKey(t.note);
+      if (!g.has(k)) g.set(k, { key: k, label: k ? String(t.note).trim() : 'Tanpa keterangan', items: [] });
+      g.get(k).items.push(t);
+    });
+    const groups = [...g.values()].map((x) => ({ ...x, amount: sum(x.items) }))
+      .sort((a, b) => b.amount - a.amount || a.label.localeCompare(b.label));
+    return { name, amount, share: total ? amount / total : 0, groups };
+  }).sort((a, b) => b.amount - a.amount || a.name.localeCompare(b.name));
+  return { kind, total, cats };
+}
+
+function mapSideHtml(s, dir) {
+  const title = dir === 'in' ? 'Masuk' : 'Keluar';
+  if (!s.cats.length) {
+    return `<div class="mm-side ${dir}"><div class="mm-h">${title}</div>
+      <div class="mm-none" id="mm-${dir}-none" data-p="mm-c" data-w="1.5" data-c="#8e8e93" data-dash="1">Belum ada ${dir === 'in' ? 'top up' : 'pengeluaran'} bulan ini</div></div>`;
+  }
+  const cats = s.cats.map((c, i) => {
+    const key = dir + '|' + c.name, moreKey = key + '|more';
+    const open = ui.mmOpen.has(key), all = ui.mmOpen.has(moreKey);
+    const isNew = !!ui.mmJust && ui.mmJust.startsWith(key);
+    const id = `mm-${dir}-${i}`, col = colorOf(c.name);
+    let kids = '';
+    if (open) {
+      const shown = all || c.groups.length <= 6 ? c.groups : c.groups.slice(0, 5);
+      const rest = c.groups.slice(shown.length);
+      kids = shown.map((g, j) => {
+        const gk = key + '|' + g.key;
+        mmGroups[gk] = { kind: s.kind, cat: c.name, label: g.label, ids: g.items.map((t) => t.id) };
+        const share = c.amount ? g.amount / c.amount : 0;
+        return `<button class="mm-node leaf${isNew ? ' new' : ''}" id="${id}-${j}" data-p="${id}" data-w="${lineW(share)}" data-c="${col}" data-act="mmleaf" data-g="${esc(gk)}" style="--c:${col}">
+          <span class="mm-t">${esc(g.label)}${g.items.length > 1 ? ` <em>${g.items.length}×</em>` : ''}</span>
+          <span class="mm-v">${fmt(g.amount)} · ${pctTxt(share)}</span></button>`;
+      }).join('');
+      if (rest.length) {
+        const ra = sum(rest.flatMap((g) => g.items));
+        kids += `<button class="mm-node more${isNew ? ' new' : ''}" id="${id}-more" data-p="${id}" data-w="1.25" data-c="${col}" data-act="mmtoggle" data-k="${esc(moreKey)}" style="--c:${col}">
+          <span class="mm-t">Lainnya <em>${rest.length}</em></span><span class="mm-v">${fmt(ra)} · ${pctTxt(c.amount ? ra / c.amount : 0)}</span></button>`;
+      } else if (all && c.groups.length > 6) {
+        kids += `<button class="mm-node more" id="${id}-less" data-act="mmtoggle" data-k="${esc(moreKey)}"><span class="mm-t">Ringkas</span></button>`;
+      }
+    }
+    return `<div class="mm-branch${open ? ' open' : ''}">
+      <button class="mm-node cat" id="${id}" data-p="mm-c" data-w="${lineW(c.share)}" data-c="${col}" data-act="mmtoggle" data-k="${esc(key)}" aria-expanded="${open}" style="--c:${col}">
+        <span class="mm-t"><i class="dot"></i>${esc(c.name)}</span>
+        <span class="mm-v">${fmt(c.amount)} · ${pctTxt(c.share)}</span>
+        <svg class="i mm-chev" viewBox="0 0 24 24" aria-hidden="true">${IC.right}</svg>
+      </button>
+      ${kids ? `<div class="mm-kids">${kids}</div>` : ''}
+    </div>`;
+  }).join('');
+  return `<div class="mm-side ${dir}"><div class="mm-h">${title}<b>${fmt(s.total)}</b></div>${cats}</div>`;
+}
+
+function viewMap() {
+  const m = ui.month;
+  mmGroups = {};
+  const ins = mapSide(S.topups.filter((t) => t.date.startsWith(m)), 'topup');
+  const outs = mapSide(S.expenses.filter((t) => t.date.startsWith(m)), 'expense');
+  const head = `<div class="page-head"><h1>Peta</h1><p>Aliran uang per bulan</p></div>
+  <div style="margin-bottom:16px">${monthNav()}</div>`;
+  if (!ins.cats.length && !outs.cats.length) return head + emptyBlock('Belum ada aliran', esc(monthLabel(m)), 'Catat', 'new', 'expense');
+  const net = ins.total - outs.total;
+  return head + `<div class="mm" id="mm"><svg class="mm-lines" id="mm-lines" aria-hidden="true"></svg>
+    ${mapSideHtml(ins, 'in')}
+    <div class="mm-center" id="mm-c"><small>Selisih ${esc(monthLabel(m))}</small><b class="${net < 0 ? 'neg' : ''}">${net > 0 ? '+' : ''}${fmt(net)}</b><span>Masuk ${fmt(ins.total)} · Keluar ${fmt(outs.total)}</span></div>
+    ${mapSideHtml(outs, 'out')}
+  </div>`;
+}
+
+/* ---------- Peta: garis penghubung ---------- */
+function drawMap(animate) {
+  const box = $('#mm'), lines = $('#mm-lines');
+  if (!box || !lines) return;
+  const B = box.getBoundingClientRect();
+  const W = Math.ceil(box.scrollWidth), H = Math.ceil(box.scrollHeight);
+  lines.setAttribute('width', W); lines.setAttribute('height', H); lines.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const horiz = matchMedia('(min-width: 1100px)').matches;
+  const rect = (el) => { const r = el.getBoundingClientRect(); return { l: r.left - B.left, r: r.right - B.left, t: r.top - B.top, b: r.bottom - B.top, cy: (r.top + r.bottom) / 2 - B.top }; };
+  const out = [];
+  box.querySelectorAll('[data-p]').forEach((el) => {
+    const par = document.getElementById(el.dataset.p);
+    if (!par) return;
+    const a = rect(par), b = rect(el);
+    const dir = el.closest('.mm-side').classList.contains('in') ? 'in' : 'out';
+    let d;
+    if (horiz) {
+      const x0 = dir === 'out' ? a.r : a.l, x1 = dir === 'out' ? b.l : b.r, mx = (x0 + x1) / 2;
+      d = `M${x0} ${a.cy}C${mx} ${a.cy} ${mx} ${b.cy} ${x1} ${b.cy}`;
+    } else {
+      const up = b.cy < a.cy, x0 = a.l + 16, y0 = up ? a.t : a.b, x1 = b.l, y1 = b.cy;
+      const r = Math.max(0, Math.min(12, Math.abs(y1 - y0) / 2, (x1 - x0) / 2)), sgn = up ? -1 : 1;
+      d = `M${x0} ${y0}V${y1 - sgn * r}Q${x0} ${y1} ${x0 + r} ${y1}H${x1}`;
+    }
+    const cls = [el.dataset.p === 'mm-c' ? '' : 'k', animate && el.classList.contains('new') ? 'grow' : '', el.dataset.dash ? 'dash' : ''].join(' ').trim();
+    const w = horiz ? el.dataset.w : (el.dataset.w * .75).toFixed(2);
+    out.push(`<path d="${d}" class="${cls}" ${cls.includes('grow') ? 'pathLength="1"' : ''} style="stroke:${el.dataset.c};stroke-width:${w}px"/>`);
+  });
+  lines.innerHTML = out.join('');
+}
+
+function openGroupPanel(gk) {
+  const g = mmGroups[gk];
+  if (!g) return;
+  const isExp = g.kind === 'expense';
+  const list = (isExp ? S.expenses : S.topups).filter((t) => g.ids.includes(t.id))
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const rows = list.map((t) => `<button class="row" data-act="edit" data-kind="${g.kind}" data-id="${esc(t.id)}" style="--c:${colorOf(t.category)}">
+      <span class="av" aria-hidden="true">${esc(([...t.category.trim()][0] || '?').toUpperCase())}</span>
+      <span class="row-main"><span class="row-title">${esc(dayLabel(t.date))}</span><span class="row-sub">${esc(t.note && t.note !== '-' ? t.note : 'Tanpa keterangan')}</span></span>
+      <span class="row-end"><span class="row-amt ${isExp ? '' : 'in'}">${isExp ? '−' : '+'}${fmt(t.amount)}</span></span></button>`).join('');
+  openSheet(`<div class="sheet-head"><button type="button" data-act="close">Tutup</button><h2>${esc(g.label)}</h2><span style="min-width:64px"></span></div>
+    <div class="summary" style="box-shadow:none;background:var(--sheet-card);margin:4px 0 14px"><small>${esc(g.cat)} · ${esc(monthLabel(ui.month))} · ${list.length}×</small><div class="v">${fmt(sum(list))}</div></div>
+    <div class="group">${rows || '<div class="status-line">Tidak ada transaksi</div>'}</div>`);
+}
+
 function viewSettings() {
   const st = ui.sync.state;
   const sline = !connected() ? ['idle', 'Mode lokal', 'Hanya di perangkat ini']
@@ -850,8 +1047,9 @@ function renderMain() {
   const a = document.activeElement;
   if (ui.tab === 'settings' && main.contains(a) && /^(INPUT|TEXTAREA)$/.test(a.tagName)) return; // jangan ganggu saat mengetik
   const y = window.scrollY;
-  main.innerHTML = ui.tab === 'home' ? viewHome() : ui.tab === 'settings' ? viewSettings() : viewTx(ui.tab);
+  main.innerHTML = ui.tab === 'home' ? viewHome() : ui.tab === 'settings' ? viewSettings() : ui.tab === 'map' ? viewMap() : viewTx(ui.tab);
   window.scrollTo(0, y);
+  if (ui.tab === 'map') { drawMap(true); ui.mmJust = ''; }
 }
 function render() { renderChrome(); renderMain(); }
 
@@ -1088,6 +1286,12 @@ document.addEventListener('click', async (e) => {
     case 'filter': ui.filter[ui.tab] = d.cat; renderMain(); break;
     case 'new': openTxForm(d.kind); break;
     case 'edit': openTxForm(d.kind, d.id); break;
+    case 'mmtoggle': {
+      const k = d.k;
+      if (ui.mmOpen.has(k)) { ui.mmOpen.delete(k); ui.mmJust = ''; } else { ui.mmOpen.add(k); ui.mmJust = k; }
+      renderMain(); break;
+    }
+    case 'mmleaf': openGroupPanel(d.g); break;
     case 'cat': openCatForm(d.cat); break;
     case 'newcat': openCatForm(); break;
     case 'close': closeSheet(); break;
@@ -1138,6 +1342,8 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 wide.addEventListener('change', () => bar.classList.remove('mini'));
 window.addEventListener('online', () => scheduleSync(200));
+let mmRaf = 0;
+window.addEventListener('resize', () => { if (ui.tab === 'map') { cancelAnimationFrame(mmRaf); mmRaf = requestAnimationFrame(() => drawMap(false)); } });
 window.addEventListener('offline', () => renderChrome());
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(200); });
 setInterval(() => { if (document.visibilityState === 'visible') sync(); }, 90000);
@@ -1155,7 +1361,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme
    ===================================================================== */
 buildNav();
 applyTheme();
-const h = location.hash.match(/^#\/(home|expense|topup|settings)$/);
+const h = location.hash.match(/^#\/(home|expense|topup|map|settings)$/);
 if (h) ui.tab = h[1];
 render();
 importHashConfig().then(() => scheduleSync(50));
